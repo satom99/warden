@@ -47,11 +47,15 @@ defmodule Warden.Permission do
         cond do
             is_admin?(identity) ->
                 true
-            not function_exported?(module, :can?, 3) ->
+            not exports?(module, :can?, 3) ->
                 false
             true ->
                 module.can?(identity, action, params)
         end
+    end
+
+    defp exports?(module, function, arity) do
+        {function, arity} in module.__info__(:functions)
     end
 
     defp get_resolver(middleware) when is_list(middleware) do
