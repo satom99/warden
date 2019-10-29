@@ -139,7 +139,7 @@ defmodule Warden.Loader do
                 |> struct(params)
                 |> Ability.query(identity)
         end
-        model.filter(object, params, model)
+        model.filter(object, params)
     end
 
     defp capsule(tuple) when is_tuple(tuple) do
