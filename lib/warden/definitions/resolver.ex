@@ -16,7 +16,7 @@ defmodule Warden.Resolver do
         quote do
             @behaviour Warden.Resolver
 
-            alias Warden.{Identity, Ability}
+            alias Warden.{Identity, Ability, Loader}
         end
     end
 end
