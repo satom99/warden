@@ -38,7 +38,7 @@ defmodule Warden.Model do
     """
     @callback delete(Schema.t | Changeset.t) :: tuple
 
-    @optional_callbacks [filter: 2, all: 1, one: 1, preload: 2, update: 2, delete: 2]
+    @optional_callbacks [filter: 2, all: 1, one: 1, preload: 2, update: 2, delete: 1]
 
     defmacro __using__(_options) do
         quote do
