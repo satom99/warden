@@ -14,11 +14,6 @@ defmodule Warden.Model do
     @callback filter(Queryable.t, Enumerable.t) :: Queryable.t
 
     @doc """
-    Wrapper around `c:Ecto.Repo.preload/3`.
-    """
-    @callback preload(struct, Keyword.t) :: struct
-
-    @doc """
     Wrapper around `c:Ecto.Repo.all/2`.
     """
     @callback all(Queryable.t) :: [Schema.t]
@@ -29,14 +24,21 @@ defmodule Warden.Model do
     @callback one(Queryable.t) :: Schema.t | nil
 
     @doc """
+    Wrapper around `c:Ecto.Repo.preload/3`.
+    """
+    @callback preload(struct, Keyword.t) :: struct
+
+    @doc """
     Wrapper around `c:Ecto.Repo.update/2`.
     """
-    @callback update(Changeset.t, Keyword.t) :: tuple
+    @callback update(Changeset.t, map) :: tuple
 
     @doc """
     Wrapper around `c:Ecto.Repo.delete/2`.
     """
-    @callback delete(Schema.t | Changeset.t, Keyword.t) :: tuple
+    @callback delete(Schema.t | Changeset.t) :: tuple
+
+    @optional_callbacks [filter: 2, all: 1, one: 1, preload: 2, update: 2, delete: 2]
 
     defmacro __using__(_options) do
         quote do
