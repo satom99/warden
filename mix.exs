@@ -14,7 +14,7 @@ defmodule Warden.MixProject do
 
 	def application do
 		[
-			applications: []
+			applications: [:dataloader]
 		]
 	end
 
