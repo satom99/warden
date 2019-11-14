@@ -19,12 +19,12 @@ defmodule Warden.Provider do
     @doc """
     Stores a given term under a specific key.
     """
-    @callback store(String.t, term, pos_integer) :: any
+    @callback store(String.t, term, pos_integer) :: {:ok, term} | {:error, any}
 
     @doc """
     Fetches a previously stored term under a given key.
     """
-    @callback fetch(String.t) :: any
+    @callback fetch(String.t) :: {:ok, term} | {:error, any}
 
     @optional_callbacks [sign: 2, verify: 2, store: 3, fetch: 1]
 
