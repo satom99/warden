@@ -8,13 +8,15 @@ defmodule Warden.Permission do
     alias Absinthe.Pipeline
     alias Warden.Identity
 
+    @resolution {Resolution, :call}
+
     @doc """
     Injects the middleware right before resolution.
     """
     @spec inject(list) :: list
 
     def inject(middleware) do
-        Pipeline.insert_before(middleware, {Resolution, :call}, __MODULE__)
+        Pipeline.insert_before(middleware, @resolution, __MODULE__)
     end
 
     @doc false
