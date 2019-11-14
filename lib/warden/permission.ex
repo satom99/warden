@@ -57,7 +57,9 @@ defmodule Warden.Permission do
     end
 
     defp exports?(module, function, arity) do
-        {function, arity} in module.__info__(:functions)
+        with true <- Code.ensure_loaded?(module) do
+            function_exported?(module, function, arity)
+        end
     end
 
     defp get_resolver(middleware) when is_list(middleware) do
