@@ -1,6 +1,6 @@
 defmodule Warden.Model do
     @moduledoc """
-    Defines a behaviour for models to implement.
+    Defines a behaviour for Ecto models to implement.
     """
     import Ecto.Query
 
@@ -55,7 +55,7 @@ defmodule Warden.Model do
                 |> Keyword.new
 
                 where(object, ^params)
-            end            
+            end
             defoverridable [filter: 2]
         end
     end

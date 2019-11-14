@@ -1,6 +1,6 @@
 defprotocol Warden.Ability do
     @moduledoc """
-    Permits limitting certain queryables.
+    Protocol for Ecto queryables. 
     """
     alias Ecto.Queryable
     alias Warden.Identity

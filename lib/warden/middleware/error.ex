@@ -1,13 +1,13 @@
 defmodule Warden.Error do
     @moduledoc """
-    Middleware that transforms changeset errors.
+    Transforms changeset errors as a middleware.
     """
     use Warden.Middleware
 
     alias Ecto.Changeset
 
     @doc """
-    Injects the middleware at the end.
+    Injects the middleware at the tail.
     """
     @spec inject(list) :: list
 
@@ -16,25 +16,23 @@ defmodule Warden.Error do
     end
 
     @doc false
-    def call(resolution, _config) do
+    def call(resolution, _options) do
         errors = resolution
         |> Map.get(:errors)
-        |> Enum.map(&parse/1)
+        |> Enum.map(&transform/1)
         |> List.flatten
 
         %{resolution | errors: errors}
     end
 
-    defp parse(%Changeset{} = changeset) do
+    defp transform(%Changeset{} = changeset) do
         changeset
         |> Changeset.traverse_errors(&format/1)
-        |> Enum.map(
-            fn {key, value} ->
-                %{key: key, message: value}
-            end
-        )
+        |> Enum.map(&object/1)
     end
-    defp parse(error), do: error
+    defp transform(error) do
+        error
+    end
 
     defp format({message, options}) do
         Enum.reduce(
@@ -44,5 +42,8 @@ defmodule Warden.Error do
                 String.replace(acc, "%{#{key}}", value)
             end
         )
+    end
+    defp object({key, value}) do
+        %{key: key, value: value}
     end
 end

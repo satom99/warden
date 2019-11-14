@@ -9,7 +9,7 @@ defmodule Warden.Resolver do
     whether a given identity has enough permissions.
     """
     @callback can?(Identity.t, atom, map) :: boolean
-    
+
     @optional_callbacks [can?: 3]
 
     defmacro __using__(_options) do

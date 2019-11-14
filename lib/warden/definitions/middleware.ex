@@ -5,7 +5,8 @@ defmodule Warden.Middleware do
     alias Absinthe.Middleware
 
     @doc """
-    Called to insert the middleware into a list.
+    Convenience function used to inject the middleware
+    from the `c:Absinthe.Schema.middleware/3` callback.
     """
     @callback inject([Middleware.t]) :: [Middleware.t]
 
@@ -13,6 +14,8 @@ defmodule Warden.Middleware do
         quote do
             @behaviour Absinthe.Middleware
             @behaviour Warden.Middleware
+
+            import Warden.Helper
         end
     end
 end

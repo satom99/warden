@@ -1,8 +1,6 @@
 defmodule Warden.Loader do
     @moduledoc """
     Implements multiple resource loading helpers.
-
-    Serves as a mix between `Dataloader` and direct querying.
     """
     import Ecto.Query
     import Absinthe.Resolution.Helpers
@@ -13,11 +11,14 @@ defmodule Warden.Loader do
 
     alias Absinthe.Resolution
     alias Dataloader.Source
-    alias Warden.{Model, Ability}
-    alias Warden.Permission
+    alias Warden.Identity
+    alias Warden.Ability
+    alias Warden.Model
 
     @doc """
     Updates Absinthe's context with the given source.
+
+    To be used from `c:Absinthe.Schema.context/1`.
     """
     @spec add_source(map, atom, Source.t, term) :: map
 
@@ -36,17 +37,6 @@ defmodule Warden.Loader do
     end
 
     @doc """
-    Handles connections for a given model when resolving.
-    """
-    @spec connect(Model.t, Resolution.t) :: term
-
-    def connect(model, %{arguments: arguments} = resolution) do
-        model
-        |> setup(resolution)
-        |> from_query(&model.all/1, arguments)
-    end
-
-    @doc """
     Handles fetching for a given model when resolving.
     """
     @spec fetch(Model.t, Resolution.t) :: term
@@ -59,6 +49,17 @@ defmodule Warden.Loader do
     end
 
     @doc """
+    Handles connections for a given model when resolving.
+    """
+    @spec connect(Model.t, Resolution.t) :: term
+
+    def connect(model, %{arguments: arguments} = resolution) do
+        model
+        |> setup(resolution)
+        |> from_query(&model.all/1, arguments)
+    end
+
+    @doc """
     Handles mutations for a given model when resolving.
     """
     @spec mutate(Model.t, Resolution.t) :: term
@@ -68,11 +69,8 @@ defmodule Warden.Loader do
         arguments = Map.take(arguments, fields)
         resolution = %{resolution | arguments: arguments}
 
-        case fetch(model, resolution) do
-            {:ok, struct} ->
-                model.update(struct, arguments)
-            other ->
-                other
+        with {:ok, struct} <- fetch(model, resolution) do
+            model.update(struct, arguments)
         end
     end
 
@@ -82,11 +80,8 @@ defmodule Warden.Loader do
     @spec delete(Model.t, Resolution.t) :: term
 
     def delete(model, resolution) do
-        case fetch(model, resolution) do
-            {:ok, struct} ->
-                model.delete(struct)
-            other ->
-                other
+        with {:ok, struct} <- fetch(model, resolution) do
+            model.delete(struct)
         end
     end
 
@@ -100,27 +95,26 @@ defmodule Warden.Loader do
     end
 
     @doc """
-    Absinthe resolver meant for connected associations.
+    Absinthe resolver for connected associations.
     """
+    @spec assoc(struct, map, Resolution.t) :: term
+
     def assoc(%model{} = struct, params, resolution) do
         resource = resolution.definition.schema_node.identifier
         association = model.__schema__(:association, resource)
 
-        case offset_and_limit_for_query(params, []) do
-            {:ok, offset, limit} ->
-                query = association.queryable
-                |> setup(resolution)
-                |> offset(^offset)
-                |> limit(^limit)
+        with {:ok, offset, limit} <- offset_and_limit_for_query(params, []) do
+            query = association.queryable
+            |> setup(resolution)
+            |> offset(^offset)
+            |> limit(^limit)
 
-                preload = [{resource, {query, []}}]
+            preload = [{resource, query}]
 
-                struct
-                |> model.preload(preload)
-                |> Map.get(resource)
-                |> from_slice(offset)
-            other ->
-                other
+            struct
+            |> model.preload(preload)
+            |> Map.get(resource)
+            |> from_slice(offset)
         end
     end
 
@@ -132,7 +126,7 @@ defmodule Warden.Loader do
 
     defp query(model, %{identity: identity} = params) do
         object = cond do
-            Permission.is_admin?(identity) ->
+            Identity.is_admin?(identity) ->
                 model
             true ->
                 model
