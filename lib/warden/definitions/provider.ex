@@ -2,6 +2,8 @@ defmodule Warden.Provider do
     @moduledoc """
     Defines a behaviour for providers to implement.
     """
+    import Warden.Helper
+
     alias Warden.Identity
 
     @doc """
@@ -32,5 +34,31 @@ defmodule Warden.Provider do
 
             alias Warden.Identity
         end
+    end
+
+    @doc false
+    def sign(context, identity) do
+        options = config(context)
+        provider = provider(context)
+        provider.sign(identity, options)
+    end
+
+    @doc false
+    def verify(context, token) do
+        options = config(context)
+        provider = provider(context)
+        provider.verify(token, options)
+    end
+
+    @doc false
+    def store(context, key, value, ttl) do
+        provider = provider(context)
+        provider.store(key, value, ttl)
+    end
+
+    @doc false
+    def fetch(context, key) do
+        provider = provider(context)
+        provider.store(key)
     end
 end

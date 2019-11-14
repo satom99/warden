@@ -5,7 +5,7 @@ defmodule Warden.Identity do
     use Warden.Plug
     use Warden.Resolver
 
-    alias Warden.Prover
+    alias Warden.Provider
     alias __MODULE__
 
     defstruct [
@@ -47,7 +47,7 @@ defmodule Warden.Identity do
         |> List.last
 
         identity = conn
-        |> Prover.verify(token)
+        |> Provider.verify(token)
         || %Identity{}
 
         context = %{identity: identity}
@@ -75,7 +75,7 @@ defmodule Warden.Identity do
              %{password: password} <- params,
              identity = %Identity{} <- handler.login(username, password),
              identity = %{identity | handler: handler, guest?: false},
-             token = Prover.sign(resolution, identity),
+             token = Provider.sign(resolution, identity),
              object = %{token: token}
         do
             {:ok, object}
