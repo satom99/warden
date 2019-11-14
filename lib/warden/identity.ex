@@ -77,14 +77,14 @@ defmodule Warden.Identity do
     """
     def login(params, resolution) do
         with %{identity: module} <- params,
-                %{username: username} <- params,
-                %{password: password} <- params,
-                %{context: context} <- resolution,
-                %{endpoint: endpoint} <- context,
-                identity = %Identity{} <- module.login(username, password),
-                identity = %{identity | handler: module, guest?: false},
-                token = Token.sign(endpoint, identity),
-                object = %{token: token}
+             %{username: username} <- params,
+             %{password: password} <- params,
+             %{context: context} <- resolution,
+             %{endpoint: endpoint} <- context,
+             identity = %Identity{} <- module.login(username, password),
+             identity = %{identity | handler: module, guest?: false},
+             token = Token.sign(endpoint, identity),
+             object = %{token: token}
         do
             {:ok, object}
         else
@@ -99,8 +99,8 @@ defmodule Warden.Identity do
     """
     def show(_params, resolution) do
         with %{context: context} <- resolution,
-                %{identity: identity} <- context,
-                %Identity{guest?: false} <- identity
+             %{identity: identity} <- context,
+             %Identity{guest?: false} <- identity
         do
             {:ok, identity}
         else
