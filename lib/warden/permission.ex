@@ -62,16 +62,12 @@ defmodule Warden.Permission do
         end
     end
 
-    defp get_resolver(middleware) when is_list(middleware) do
-        default = %{module: nil, name: nil}
-        Enum.find_value(middleware, default, &get_resolver/1)
-    end
-    defp get_resolver({{Resolution, :call}, function}) do
-        function
+    defp get_resolver(middleware) do
+        middleware
+        |> Pipeline.from(@resolution)
+        |> Enum.at(0, {:none, & &1})
+        |> Kernel.elem(1)
         |> Function.info
         |> Map.new
-    end
-    defp get_resolver(_tuple) do
-        false
     end
 end
