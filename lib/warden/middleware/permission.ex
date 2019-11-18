@@ -4,11 +4,8 @@ defmodule Warden.Permission do
     """
     use Warden.Middleware
 
-    alias Absinthe.Resolution
     alias Absinthe.Pipeline
     alias Warden.Identity
-
-    @resolution {Resolution, :call}
 
     @doc """
     Injects the middleware right before resolution.

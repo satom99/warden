@@ -16,6 +16,10 @@ defmodule Warden.Middleware do
             @behaviour Warden.Middleware
 
             import Warden.Helper
+
+            alias Absinthe.Resolution
+
+            @resolution {Resolution, :call}
         end
     end
 end
