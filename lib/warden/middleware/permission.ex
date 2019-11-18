@@ -4,7 +4,6 @@ defmodule Warden.Permission do
     """
     use Warden.Middleware
 
-    alias Absinthe.Pipeline
     alias Warden.Identity
 
     @doc """

@@ -17,6 +17,7 @@ defmodule Warden.Middleware do
 
             import Warden.Helper
 
+            alias Absinthe.Pipeline
             alias Absinthe.Resolution
 
             @resolution {Resolution, :call}
