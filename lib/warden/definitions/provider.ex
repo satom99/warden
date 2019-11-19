@@ -59,6 +59,6 @@ defmodule Warden.Provider do
     @doc false
     def fetch(context, key) do
         provider = provider(context)
-        provider.store(key)
+        provider.fetch(key)
     end
 end
