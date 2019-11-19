@@ -15,7 +15,7 @@ defmodule Warden.Document do
     def pipeline(%Query{pipeline: pipeline}) do
         pipeline
         |> Pipeline.insert_before(Resolution, Document)
-        |> Pipeline.insert_after(Resolution, Idempotent)
+        |> Pipeline.insert_after(Result, Idempotent)
     end
 
     def process(%Query{document: nil} = query, _options) do
