@@ -40,17 +40,22 @@ defmodule Warden.Identity do
     Updates Absinthe's context with a `t:t/0` struct.
     """
     def call(conn, _options) do
+        endpoint = endpoint(conn)
+
         token = conn
         |> get_req_header("authorization")
         |> Enum.at(0, "")
         |> String.split
         |> List.last
 
-        identity = conn
+        identity = endpoint
         |> Provider.verify(token)
         || %Identity{}
 
-        context = %{identity: identity}
+        context = %{
+            endpoint: endpoint,
+            identity: identity
+        }
         options = [context: context]
         Plug.put_options(conn, options)
     end
@@ -70,7 +75,7 @@ defmodule Warden.Identity do
     Returns a map with a `token` field upon success.
     """
     def login(params, resolution) do
-        with %{handler: handler} <- params,
+        with %{identity: handler} <- params,
              %{username: username} <- params,
              %{password: password} <- params,
              identity = %Identity{} <- handler.login(username, password),
