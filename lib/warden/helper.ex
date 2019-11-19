@@ -34,4 +34,9 @@ defmodule Warden.Helper do
         |> config
         |> Keyword.fetch!(name)
     end
+    def config(context, name, default) do
+        context
+        |> config
+        |> Keyword.get(name, default)
+    end
 end
