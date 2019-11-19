@@ -9,7 +9,6 @@ defmodule Warden.Document do
     alias Absinthe.Phase.Document.Execution.Resolution
     alias Absinthe.Phase.Document.Result
     alias Absinthe.Plug.Request.Query
-    alias Warden.Provider
     alias Warden.Idempotent
     alias __MODULE__
 
