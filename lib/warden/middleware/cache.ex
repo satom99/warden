@@ -53,6 +53,7 @@ defmodule Warden.Cache do
         end
     end
     defp perform(resolution, function, _options) do
+        dictionary([max_age: nil])
         execute(function, resolution)
     end
 
@@ -116,11 +117,11 @@ defmodule Warden.Cache do
     end
 
     defp dictionary(options) do
-        max_age = Keyword.fetch!(options, :max_age)
+        max_age = Keyword.get(options, :max_age)
         private = Keyword.get(options, :private, false)
 
         max_age = :cache_ttl
-        |> Process.get(max_age)
+        |> Process.get
         |> min(max_age)
 
         private = :cache_private
