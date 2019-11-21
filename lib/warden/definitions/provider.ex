@@ -24,7 +24,7 @@ defmodule Warden.Provider do
     @doc """
     Fetches a previously stored term under a given key.
     """
-    @callback fetch(String.t) :: {:ok, term} | {:error, any}
+    @callback fetch(String.t) :: {:ok, term, pos_integer} | {:error, any}
 
     @optional_callbacks [sign: 2, verify: 2, store: 3, fetch: 1]
 

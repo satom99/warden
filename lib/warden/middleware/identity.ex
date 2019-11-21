@@ -5,7 +5,6 @@ defmodule Warden.Identity do
     use Warden.Plug
     use Warden.Resolver
 
-    alias Warden.Provider
     alias __MODULE__
 
     defstruct [

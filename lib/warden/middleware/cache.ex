@@ -6,7 +6,6 @@ defmodule Warden.Cache do
 
     alias Absinthe.Middleware.Async
     alias Absinthe.Middleware.Dataloader
-    alias Warden.Provider
 
     @space "cache:"
 
@@ -41,7 +40,7 @@ defmodule Warden.Cache do
     defp perform(resolution, function, %{max_age: max_age} = options) do
         name = name(resolution, function, options)
         case Provider.fetch(resolution, name) do
-            {:ok, tuple} when is_tuple(tuple) ->
+            {:ok, tuple, ttl} when ttl > 0 ->
                 tuple
             _other ->
                 function
@@ -106,9 +105,8 @@ defmodule Warden.Cache do
         |> Map.get(:identifier)
 
         resolution
-        |> config(:cache, %{})
-        |> Map.new
-        |> Map.get(name, %{})
+        |> config(:cache, [])
+        |> Keyword.get(name, [])
         |> Map.new
     end
 end

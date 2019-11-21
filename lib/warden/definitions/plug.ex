@@ -10,6 +10,7 @@ defmodule Warden.Plug do
             import Warden.Helper
 
             alias Absinthe.Plug
+            alias Warden.Provider
         end
     end
 end
