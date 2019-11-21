@@ -10,8 +10,10 @@ defmodule Warden.Before do
     def call(conn, blueprint) do
         with max_age = Process.get(:cache_ttl),
              private = Process.get(:cache_private),
+             nocache = Process.get(:cache_disabled),
              false <- has_errors?(blueprint),
-             false <- is_nil(max_age)
+             false <- is_nil(max_age),
+             false <- nocache
         do
             scope = if private do "private" else "public" end
             control = "#{scope}, max_age=#{max_age}"

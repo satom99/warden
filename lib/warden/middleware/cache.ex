@@ -53,7 +53,7 @@ defmodule Warden.Cache do
         end
     end
     defp perform(resolution, function, _options) do
-        dictionary([max_age: nil])
+        dictionary([nocache: true])
         execute(function, resolution)
     end
 
@@ -119,6 +119,7 @@ defmodule Warden.Cache do
     defp dictionary(options) do
         max_age = Keyword.get(options, :max_age)
         private = Keyword.get(options, :private, false)
+        nocache = Keyword.get(options, :nocache, false)
 
         max_age = :cache_ttl
         |> Process.get
@@ -128,7 +129,12 @@ defmodule Warden.Cache do
         |> Process.get(private)
         |> Kernel.or(private)
 
+        nocache = :cache_disabled
+        |> Process.get(nocache)
+        |> Kernel.or(nocache)
+
         Process.put(:cache_ttl, max_age)
         Process.put(:cache_private, private)
+        Process.put(:cache_disabled, nocache)
     end
 end
