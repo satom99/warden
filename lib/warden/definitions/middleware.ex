@@ -19,6 +19,7 @@ defmodule Warden.Middleware do
 
             alias Absinthe.Pipeline
             alias Absinthe.Resolution
+            alias Warden.Provider
 
             @resolution {Resolution, :call}
         end

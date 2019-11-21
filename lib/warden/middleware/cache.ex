@@ -37,40 +37,46 @@ defmodule Warden.Cache do
         resolution
     end
 
-    defp perform(resolution, function, %{max_age: max_age} = options) do
+    defp perform(resolution, function, options) when is_list(options) do
         name = name(resolution, function, options)
         case Provider.fetch(resolution, name) do
             {:ok, tuple, ttl} when ttl > 0 ->
+                options
+                |> Keyword.put(:max_age, ttl)
+                |> dictionary
+
                 tuple
             _other ->
                 function
                 |> execute(resolution)
-                |> cache(resolution, name, max_age)
+                |> cache(resolution, name, options)
         end
     end
     defp perform(resolution, function, _options) do
         execute(function, resolution)
     end
 
-    defp cache({:ok, _term} = tuple, resolution, name, max_age) do
+    defp cache({:ok, _term} = tuple, resolution, name, options) do
+        max_age = Keyword.fetch!(options, :max_age)
         Provider.store(resolution, name, tuple, max_age)
+        dictionary(options)
         tuple
     end
-    defp cache({:middleware, Async = middleware, {function, options}}, resolution, name, max_age) do
+    defp cache({:middleware, Async = middleware, {function, options}}, resolution, name, options) do
         handler = fn ->
-            cache(function.(), resolution, name, max_age)
+            cache(function.(), resolution, name, options)
         end
         {:middleware, middleware, {handler, options}}
     end
-    defp cache({:middleware, Dataloader = middleware, {loader, function}}, resolution, name, max_age) do
+    defp cache({:middleware, Dataloader = middleware, {loader, function}}, resolution, name, options) do
         handler = fn loader ->
             loader
             |> function.()
-            |> cache(resolution, name, max_age)
+            |> cache(resolution, name, options)
         end
         {:middleware, middleware, {loader, handler}}
     end
-    defp cache(tuple, _resolution, _name, _max_age) do
+    defp cache(tuple, _resolution, _name, _options) do
         tuple
     end
 
@@ -106,7 +112,22 @@ defmodule Warden.Cache do
 
         resolution
         |> config(:cache, [])
-        |> Keyword.get(name, [])
-        |> Map.new
+        |> Keyword.get(name)
+    end
+
+    defp dictionary(options) do
+        max_age = Keyword.fetch!(options, :max_age)
+        private = Keyword.get(options, :private, false)
+
+        max_age = :cache_ttl
+        |> Process.get(max_age)
+        |> min(max_age)
+
+        private = :cache_private
+        |> Process.get(private)
+        |> Kernel.or(private)
+
+        Process.put(:cache_ttl, max_age)
+        Process.put(:cache_private, private)
     end
 end
