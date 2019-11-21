@@ -44,6 +44,6 @@ defmodule Warden.Error do
         )
     end
     defp object({key, value}) do
-        %{key: key, value: value}
+        %{key: key, message: value}
     end
 end
