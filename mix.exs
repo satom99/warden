@@ -29,6 +29,13 @@ defmodule Warden.MixProject do
     defp docs do
         [
             groups_for_modules: [
+                "Definitions": [
+                    Warden.Middleware,
+                    Warden.Resolver,
+                    Warden.Provider,
+                    Warden.Handler,
+                    Warden.Plug
+                ],
                 "Authentication": [
                     Warden.Identity,
                     Warden
@@ -38,12 +45,8 @@ defmodule Warden.MixProject do
                     Warden.Ability,
                     Warden.Model
                 ],
-                "Definitions": [
-                    Warden.Middleware,
-                    Warden.Resolver,
-                    Warden.Provider,
-                    Warden.Handler,
-                    Warden.Plug
+                "Cache": [
+                    Warden.Cache
                 ],
                 "Helpers": [
                     Warden.Middleware,
